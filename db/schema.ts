@@ -1,8 +1,2 @@
-import { sql } from "void/db";
-import { integer, sqliteTable, text } from "void/schema-d1";
-
-export const messages = sqliteTable("messages", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  text: text("text").notNull(),
-  createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
-});
+// Tables live in their domains. This file only gathers them for Void and Drizzle Kit
+export { booksTable } from "../src/domains/books/repo";
