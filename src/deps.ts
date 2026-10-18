@@ -9,6 +9,8 @@
 import { db } from "void/db";
 import { booksRepository } from "./domains/books/repo";
 import { booksService } from "./domains/books/service";
+import { loansRepository } from "./domains/loans/repo";
+import { loansService } from "./domains/loans/service";
 import { membersRepository } from "./domains/members/repo";
 import { membersService } from "./domains/members/service";
 
@@ -23,7 +25,8 @@ export function makeDeps(db: Db) {
     readDb: db as ReadDb,
     books: booksService(booksRepository(db)),
     members: membersService(membersRepository(db)),
+    loans: loansService(loansRepository(db)),
   };
 }
 
-export const { readDb, books, members } = makeDeps(db);
+export const { readDb, books, members, loans } = makeDeps(db);

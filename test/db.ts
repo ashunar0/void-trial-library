@@ -13,18 +13,24 @@ export async function createTestDb() {
     convertV4MiniflareOptions({ modules: true, script: "export default {}", d1Databases: ["DB"] }),
   );
   const d1 = await mf.getD1Database("DB");
-  for (const file of readdirSync(migrations).filter((f) => f.endsWith(".sql")).sort()) {
-    for (const statement of readFileSync(`${migrations}/${file}`, "utf8").split("--> statement-breakpoint")) {
+  for (const file of readdirSync(migrations)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()) {
+    for (const statement of readFileSync(`${migrations}/${file}`, "utf8").split(
+      "--> statement-breakpoint",
+    )) {
       if (statement.trim()) await d1.prepare(statement).run();
     }
   }
 
   return {
     db: createDb(d1),
-    /** Empties every table, so each test starts from nothing */
+    /** Empties every table, so each test starts from nothing. Newest first, so foreign keys hold */
     async reset() {
       const { results } = await d1
-        .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'")
+        .prepare(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY rowid DESC",
+        )
         .all<{ name: string }>();
       for (const { name } of results) await d1.prepare(`DELETE FROM "${name}"`).run();
     },

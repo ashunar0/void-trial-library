@@ -15,6 +15,13 @@
       "when": 1792335514410,
       "tag": "20261018145834_wild_king_bedlam",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792335765008,
+      "tag": "20261018150245_tidy_sway",
+      "breakpoints": true
     }
   ]
 }
