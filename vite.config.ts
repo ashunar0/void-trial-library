@@ -6,6 +6,7 @@ export default defineConfig({
   // Tests import the domains as plain modules. Void's plugin would start a Worker runtime
   plugins: process.env.VITEST ? [] : [voidPlugin(), voidReact({ react: { compiler: true } })],
   lint: {
+    jsPlugins: ["./lint/index.mjs"],
     rules: {
       // The gate: only src/deps.ts takes db. Operators (eq, asc ...) and type imports are free
       "no-restricted-imports": [
@@ -22,6 +23,11 @@ export default defineConfig({
         },
       ],
     },
-    overrides: [{ files: ["src/deps.ts"], rules: { "no-restricted-imports": "off" } }],
+    overrides: [
+      { files: ["src/deps.ts"], rules: { "no-restricted-imports": "off" } },
+      // Only the entry points read the clock. Tests may too
+      { files: ["src/**"], rules: { "library/no-clock": "error" } },
+      { files: ["**/*.test.ts"], rules: { "library/no-clock": "off" } },
+    ],
   },
 });
