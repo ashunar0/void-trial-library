@@ -1,10 +1,11 @@
-import { defineHandler, ValidationError } from "void/handler";
+import { defineHandler } from "void/handler";
 import { asc, eq } from "void/db";
 import { books, readDb } from "../../src/deps";
 import { bookCreateSchema, DuplicateIsbn } from "../../src/domains/books/model";
 import { booksWithin } from "../../src/domains/books/repo";
 import { availableCountOf } from "../../src/domains/loans/model";
 import { onLoanByBookWithin } from "../../src/domains/loans/repo";
+import { fieldError } from "../../src/lib/field-error";
 
 export const loader = defineHandler(async () => {
   const within = booksWithin(readDb);
@@ -35,5 +36,6 @@ export const action = defineHandler.withValidator({ body: bookCreateSchema })(as
   { body },
 ) => {
   const created = await books.create(body, new Date());
-  if (!created.ok) throw new ValidationError({ isbn: DuplicateIsbn.message });
+  if (!created.ok)
+    throw fieldError(created.error, { DUPLICATE_ISBN: { isbn: DuplicateIsbn.message } });
 });

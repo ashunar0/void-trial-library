@@ -1,8 +1,9 @@
-import { defineHandler, ValidationError } from "void/handler";
+import { defineHandler } from "void/handler";
 import { asc } from "void/db";
 import { members, readDb } from "../../src/deps";
 import { DuplicateEmail, memberCreateSchema } from "../../src/domains/members/model";
 import { membersWithin } from "../../src/domains/members/repo";
+import { fieldError } from "../../src/lib/field-error";
 
 export const loader = defineHandler(async () => {
   const within = membersWithin(readDb);
@@ -19,5 +20,6 @@ export const action = defineHandler.withValidator({ body: memberCreateSchema })(
   { body },
 ) => {
   const created = await members.create(body, new Date());
-  if (!created.ok) throw new ValidationError({ email: DuplicateEmail.message });
+  if (!created.ok)
+    throw fieldError(created.error, { DUPLICATE_EMAIL: { email: DuplicateEmail.message } });
 });

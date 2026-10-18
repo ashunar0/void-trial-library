@@ -17,6 +17,7 @@ import {
 import { loansWithin } from "../../src/domains/loans/repo";
 import { membersWithin } from "../../src/domains/members/repo";
 import { NotFound } from "../../src/lib/failures";
+import { fieldError } from "../../src/lib/field-error";
 
 export const loader = defineHandler(async () => {
   const today = todayOf(new Date());
@@ -68,15 +69,12 @@ export const actions = {
     if (!book) throw new ValidationError({ bookId: NotFound.message });
 
     const created = await loans.create({ member, book }, new Date());
-    if (created.ok) return;
-    switch (created.error) {
-      case MemberHasOverdue.code:
-        throw new ValidationError({ memberId: MemberHasOverdue.message });
-      case AlreadyBorrowed.code:
-        throw new ValidationError({ bookId: AlreadyBorrowed.message });
-      case OutOfStock.code:
-        throw new ValidationError({ bookId: OutOfStock.message });
-    }
+    if (!created.ok)
+      throw fieldError(created.error, {
+        MEMBER_HAS_OVERDUE: { memberId: MemberHasOverdue.message },
+        ALREADY_BORROWED: { bookId: AlreadyBorrowed.message },
+        OUT_OF_STOCK: { bookId: OutOfStock.message },
+      });
   }),
 
   return: defineHandler.withValidator({ body: z.strictObject({ loanId: loanIdSchema }) })(
@@ -84,7 +82,7 @@ export const actions = {
       const returned = await loans.returnBook(body.loanId, new Date());
       if (returned.ok) return;
       if (returned.error === NotFound.code) throw new HTTPException(404);
-      throw new ValidationError({ loanId: AlreadyReturned.message });
+      throw fieldError(returned.error, { ALREADY_RETURNED: { loanId: AlreadyReturned.message } });
     },
   ),
 };
