@@ -2,25 +2,13 @@
  * Storage for members. Fulfills the MembersRepository declared in service.ts with D1.
  * Row shapes never leave this file; rows are mapped to the domain Member
  */
-// void/db is generated from db/schema.ts, which imports this file. Never use its values at module scope (a cycle)
 import type { db as voidDb } from "void/db";
-import { integer, sqliteTable, text, uniqueIndex } from "void/schema-d1";
+import { membersTable } from "@schema";
 import type { ReadDb } from "../../deps";
 import { memberId, type Member } from "./model";
 import type { MembersRepository } from "./service";
 
 type Db = typeof voidDb;
-
-export const membersTable = sqliteTable(
-  "members",
-  {
-    id: text("id").primaryKey(),
-    name: text("name").notNull(),
-    email: text("email").notNull(),
-    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
-  },
-  (t) => [uniqueIndex("members_email").on(t.email)],
-);
 
 type MemberRow = typeof membersTable.$inferSelect;
 

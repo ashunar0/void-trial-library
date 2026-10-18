@@ -2,28 +2,13 @@
  * Storage for books. Fulfills the BooksRepository declared in service.ts with D1.
  * Row shapes never leave this file; rows are mapped to the domain Book
  */
-// void/db is generated from db/schema.ts, which imports this file. Never use its values at module scope (a cycle)
 import { eq, type db as voidDb } from "void/db";
-import { integer, sqliteTable, text, uniqueIndex } from "void/schema-d1";
+import { booksTable } from "@schema";
 import type { ReadDb } from "../../deps";
 import { bookId, type Book } from "./model";
 import type { BooksRepository } from "./service";
 
 type Db = typeof voidDb;
-
-export const booksTable = sqliteTable(
-  "books",
-  {
-    id: text("id").primaryKey(),
-    isbn: text("isbn").notNull(),
-    title: text("title").notNull(),
-    author: text("author").notNull(),
-    stock: integer("stock").notNull(),
-    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
-    updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
-  },
-  (t) => [uniqueIndex("books_isbn").on(t.isbn)],
-);
 
 type BookRow = typeof booksTable.$inferSelect;
 

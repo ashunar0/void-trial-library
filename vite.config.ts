@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import { voidPlugin } from "void";
 import { voidReact } from "@void/react/plugin";
@@ -5,6 +6,10 @@ import { voidReact } from "@void/react/plugin";
 export default defineConfig({
   // Tests import the domains as plain modules. Void's plugin would start a Worker runtime
   plugins: process.env.VITEST ? [] : [voidPlugin(), voidReact({ react: { compiler: true } })],
+  // Void's plugin gives @schema; tests run without it
+  resolve: process.env.VITEST
+    ? { alias: { "@schema": fileURLToPath(new URL("./db/schema", import.meta.url)) } }
+    : {},
   lint: {
     jsPlugins: ["./lint/index.mjs"],
     rules: {
