@@ -3,6 +3,7 @@ import { asc, eq } from "void/db";
 import { books, readDb } from "../../src/deps";
 import { bookCreateSchema, DuplicateIsbn } from "../../src/domains/books/model";
 import { booksWithin } from "../../src/domains/books/repo";
+import { availableCountOf } from "../../src/domains/loans/model";
 import { onLoanByBookWithin } from "../../src/domains/loans/repo";
 
 export const loader = defineHandler(async () => {
@@ -24,7 +25,7 @@ export const loader = defineHandler(async () => {
   return {
     books: rows.map(({ onLoan, ...book }) => ({
       ...book,
-      availableCount: book.stock - (onLoan ?? 0),
+      availableCount: availableCountOf(book.stock, onLoan ?? 0),
     })),
   };
 });

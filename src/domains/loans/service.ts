@@ -4,6 +4,7 @@ import { err, ok, type Result } from "../../lib/result";
 import {
   AlreadyBorrowed,
   AlreadyReturned,
+  availableCountOf,
   dueOnOf,
   MemberHasOverdue,
   newLoanId,
@@ -53,7 +54,8 @@ export function loansService(repo: LoansRepository) {
 
       if (await repo.hasOverdue(member.id, today)) return err(MemberHasOverdue.code);
       if (await repo.hasOut(member.id, book.id)) return err(AlreadyBorrowed.code);
-      if ((await repo.countOutOfBook(book.id)) >= book.stock) return err(OutOfStock.code);
+      if (availableCountOf(book.stock, await repo.countOutOfBook(book.id)) <= 0)
+        return err(OutOfStock.code);
 
       const inserted = await repo.insert({
         id: newLoanId(),

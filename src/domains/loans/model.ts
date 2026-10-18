@@ -45,6 +45,9 @@ export const dueOnOf = (loanedOn: string) => addDays(loanedOn, LOAN_DAYS);
 export const isOverdue = (loan: Pick<Loan, "dueOn" | "returnedOn">, today: string) =>
   loan.returnedOn === null && loan.dueOn < today;
 
+/** Copies of a book that can be lent now: the ones the library owns, less the ones out on loan */
+export const availableCountOf = (stock: number, onLoan: number) => stock - onLoan;
+
 export const loanCreateSchema = z.strictObject({
   memberId: z.string().min(1),
   bookId: z.string().min(1),
