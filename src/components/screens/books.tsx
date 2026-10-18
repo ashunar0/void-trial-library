@@ -2,7 +2,14 @@ import { Form, Link, useForm } from "@void/react";
 
 /** The screen declares what it shows. The page's loader has to fit this */
 type Props = {
-  books: { id: string; isbn: string; title: string; author: string; stock: number }[];
+  books: {
+    id: string;
+    isbn: string;
+    title: string;
+    author: string;
+    stock: number;
+    availableCount: number;
+  }[];
 };
 
 export function BooksScreen({ books }: Props) {
@@ -17,7 +24,8 @@ export function BooksScreen({ books }: Props) {
         <ul>
           {books.map((book) => (
             <li key={book.id}>
-              <Link href={`/books/${book.id}`}>{book.title}</Link> / {book.author}（{book.stock} 冊、ISBN {book.isbn}）
+              <Link href={`/books/${book.id}`}>{book.title}</Link> / {book.author}（貸出できる{" "}
+              {book.availableCount} / {book.stock} 冊、ISBN {book.isbn}）
             </li>
           ))}
         </ul>
@@ -37,7 +45,10 @@ export function BooksScreen({ books }: Props) {
         {form.errors.title && <span>{form.errors.title}</span>}
         <label>
           著者
-          <input value={form.data.author} onChange={(e) => form.setData("author", e.target.value)} />
+          <input
+            value={form.data.author}
+            onChange={(e) => form.setData("author", e.target.value)}
+          />
         </label>
         {form.errors.author && <span>{form.errors.author}</span>}
         <label>

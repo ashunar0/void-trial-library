@@ -9,6 +9,9 @@ export default function HomePage() {
         <li>
           <a href="/members">会員</a>
         </li>
+        <li>
+          <a href="/loans">貸出</a>
+        </li>
       </ul>
     </main>
   );

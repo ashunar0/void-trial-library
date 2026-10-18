@@ -29,7 +29,10 @@ export function BookScreen({ book }: Props) {
         {form.errors.title && <span>{form.errors.title}</span>}
         <label>
           著者
-          <input value={form.data.author} onChange={(e) => form.setData("author", e.target.value)} />
+          <input
+            value={form.data.author}
+            onChange={(e) => form.setData("author", e.target.value)}
+          />
         </label>
         {form.errors.author && <span>{form.errors.author}</span>}
         <label>

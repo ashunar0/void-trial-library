@@ -14,9 +14,10 @@ export const loader = defineHandler(async () => {
   return { members: rows };
 });
 
-export const action = defineHandler.withValidator({ body: memberCreateSchema })(
-  async (_c, { body }) => {
-    const created = await members.create(body, new Date());
-    if (!created.ok) throw new ValidationError({ email: DuplicateEmail.message });
-  },
-);
+export const action = defineHandler.withValidator({ body: memberCreateSchema })(async (
+  _c,
+  { body },
+) => {
+  const created = await members.create(body, new Date());
+  if (!created.ok) throw new ValidationError({ email: DuplicateEmail.message });
+});

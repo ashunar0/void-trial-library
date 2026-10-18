@@ -1,6 +1,12 @@
 /** The steps for members (How) */
 import { err, ok, type Result } from "../../lib/result";
-import { DuplicateEmail, newMemberId, type Member, type MemberCreateInput, type MemberId } from "./model";
+import {
+  DuplicateEmail,
+  newMemberId,
+  type Member,
+  type MemberCreateInput,
+  type MemberId,
+} from "./model";
 
 export type MembersRepository = {
   /** "emailTaken" when the email is registered */
