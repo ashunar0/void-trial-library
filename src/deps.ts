@@ -10,9 +10,17 @@ import { db } from "void/db";
 import { booksRepository } from "./domains/books/repo";
 import { booksService } from "./domains/books/service";
 
+type Db = typeof db;
+
 /** A db that can only read */
-export type ReadDb = Pick<typeof db, "select">;
+export type ReadDb = Pick<Db, "select">;
 
-export const readDb: ReadDb = db;
+/** Wires every domain to one db. Tests call it with their own db */
+export function makeDeps(db: Db) {
+  return {
+    readDb: db as ReadDb,
+    books: booksService(booksRepository(db)),
+  };
+}
 
-export const books = booksService(booksRepository(db));
+export const { readDb, books } = makeDeps(db);
