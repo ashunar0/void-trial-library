@@ -1,12 +1,12 @@
 import { defineHandler, ValidationError } from "void/handler";
-import { asc, db } from "void/db";
-import { books } from "../../src/deps";
+import { asc } from "void/db";
+import { books, readDb } from "../../src/deps";
 import { bookCreateSchema, DuplicateIsbn } from "../../src/domains/books/model";
 import { booksWithin } from "../../src/domains/books/repo";
 
 export const loader = defineHandler(async () => {
-  const within = booksWithin(db);
-  const rows = await db
+  const within = booksWithin(readDb);
+  const rows = await readDb
     .select({
       id: within.id,
       isbn: within.isbn,

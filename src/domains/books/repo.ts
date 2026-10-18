@@ -5,6 +5,7 @@
 // Type only: void/db is generated from db/schema.ts, which imports this file. A value import is a cycle
 import type { db as voidDb } from "void/db";
 import { integer, sqliteTable, text, uniqueIndex } from "void/schema-d1";
+import type { ReadDb } from "../../deps";
 import { bookId, type Book } from "./model";
 import type { BooksRepository } from "./service";
 
@@ -44,7 +45,7 @@ const isIsbnTaken = (error: unknown) =>
   );
 
 /** Every book, as a table to read */
-export const booksWithin = (db: Db) => db.select().from(booksTable).as("books_within");
+export const booksWithin = (db: ReadDb) => db.select().from(booksTable).as("books_within");
 
 export function booksRepository(db: Db): BooksRepository {
   return {
