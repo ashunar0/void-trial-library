@@ -13,6 +13,9 @@ export const bookId = (value: string) => value as BookId;
 
 export const newBookId = () => bookId(crypto.randomUUID());
 
+/** An ID in the input (URL or body). Branded once it passes validation */
+export const bookIdSchema = z.string().min(1).transform(bookId);
+
 export type Book = {
   id: BookId;
   isbn: string;
@@ -35,14 +38,26 @@ export const isValidIsbn13 = (isbn: string): boolean => {
   return sum % 10 === 0;
 };
 
+const titleSchema = z.string().trim().min(1).max(200);
+const authorSchema = z.string().trim().min(1).max(100);
+const stockSchema = z.number().int().min(1);
+
 export const bookCreateSchema = z.strictObject({
   isbn: z.string().refine(isValidIsbn13, "isbn must be 13 digits with a correct check digit"),
-  title: z.string().trim().min(1).max(200),
-  author: z.string().trim().min(1).max(100),
-  stock: z.number().int().min(1),
+  title: titleSchema,
+  author: authorSchema,
+  stock: stockSchema,
+});
+
+/** The isbn cannot change, so sending it is a 400 (strict) */
+export const bookUpdateSchema = z.strictObject({
+  title: titleSchema.optional(),
+  author: authorSchema.optional(),
+  stock: stockSchema.optional(),
 });
 
 export type BookCreateInput = z.infer<typeof bookCreateSchema>;
+export type BookUpdateInput = z.infer<typeof bookUpdateSchema>;
 
 export const DuplicateIsbn = {
   code: "DUPLICATE_ISBN",

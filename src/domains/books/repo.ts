@@ -2,8 +2,8 @@
  * Storage for books. Fulfills the BooksRepository declared in service.ts with D1.
  * Row shapes never leave this file; rows are mapped to the domain Book
  */
-// Type only: void/db is generated from db/schema.ts, which imports this file. A value import is a cycle
-import type { db as voidDb } from "void/db";
+// void/db is generated from db/schema.ts, which imports this file. Never use its values at module scope (a cycle)
+import { eq, type db as voidDb } from "void/db";
 import { integer, sqliteTable, text, uniqueIndex } from "void/schema-d1";
 import type { ReadDb } from "../../deps";
 import { bookId, type Book } from "./model";
@@ -59,6 +59,25 @@ export function booksRepository(db: Db): BooksRepository {
         if (isIsbnTaken(error)) return "isbnTaken";
         throw error;
       }
+    },
+
+    async update(id, changes, now) {
+      const [row] = await db
+        .update(booksTable)
+        .set({ ...changes, updatedAt: now })
+        .where(eq(booksTable.id, id))
+        .returning();
+
+      return row ? toBook(row) : null;
+    },
+
+    async delete(id) {
+      const rows = await db
+        .delete(booksTable)
+        .where(eq(booksTable.id, id))
+        .returning({ id: booksTable.id });
+
+      return rows.length > 0;
     },
   };
 }

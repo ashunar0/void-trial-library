@@ -1,4 +1,4 @@
-import { Form, useForm } from "@void/react";
+import { Form, Link, useForm } from "@void/react";
 
 /** The screen declares what it shows. The page's loader has to fit this */
 type Props = {
@@ -17,7 +17,7 @@ export function BooksScreen({ books }: Props) {
         <ul>
           {books.map((book) => (
             <li key={book.id}>
-              <strong>{book.title}</strong> / {book.author}（{book.stock} 冊、ISBN {book.isbn}）
+              <Link href={`/books/${book.id}`}>{book.title}</Link> / {book.author}（{book.stock} 冊、ISBN {book.isbn}）
             </li>
           ))}
         </ul>
