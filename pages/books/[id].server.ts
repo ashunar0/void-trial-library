@@ -1,10 +1,8 @@
 import { defineHandler } from "void";
-import { eq } from "void/db";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import { books, readDb } from "../../src/deps";
+import { bookQueries, books } from "../../src/deps";
 import { bookIdSchema, bookUpdateSchema } from "../../src/domains/books/model";
-import { booksWithin } from "../../src/domains/books/repo";
 
 const params = z.object({ id: bookIdSchema });
 
@@ -13,18 +11,7 @@ export const loader = defineHandler(async (c) => {
   const parsed = params.safeParse(c.req.param());
   if (!parsed.success) return c.notFound();
 
-  const within = booksWithin(readDb);
-  const [book] = await readDb
-    .select({
-      id: within.id,
-      isbn: within.isbn,
-      title: within.title,
-      author: within.author,
-      stock: within.stock,
-    })
-    .from(within)
-    .where(eq(within.id, parsed.data.id))
-    .limit(1);
+  const book = await bookQueries.get(parsed.data.id);
   if (!book) return c.notFound();
 
   return { book };

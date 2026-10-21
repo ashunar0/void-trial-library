@@ -1,19 +1,9 @@
 import { defineHandler } from "void/handler";
-import { asc } from "void/db";
-import { members, readDb } from "../../src/deps";
+import { memberQueries, members } from "../../src/deps";
 import { DuplicateEmail, memberCreateSchema } from "../../src/domains/members/model";
-import { membersWithin } from "../../src/domains/members/repo";
 import { fieldError } from "../../src/lib/field-error";
 
-export const loader = defineHandler(async () => {
-  const within = membersWithin(readDb);
-  const rows = await readDb
-    .select({ id: within.id, name: within.name, email: within.email })
-    .from(within)
-    .orderBy(asc(within.createdAt), asc(within.id));
-
-  return { members: rows };
-});
+export const loader = defineHandler(async () => ({ members: await memberQueries.list() }));
 
 export const action = defineHandler.withValidator({ body: memberCreateSchema })(async (
   _c,
